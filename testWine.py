@@ -100,19 +100,19 @@ class ClientsTestCase(unittest.TestCase):
         
         self.deleteClient(id_client)
         
-    
+    '''
     def test_getItems(self):
         id_client = self.addClient()
         id_cart = self.addCart(id_client)
 
-        response = self.tester.getItems('/clients/' + id_client + '/carts/' + str(id_cart + '/items'), content_type='application/json')
+        response = self.tester.get('/clients/' + id_client + '/carts/' + str(id_cart + '/items'), content_type='application/json')
         
         self.assertEqual(response.status_code, 200)
         
         self.deleteCart(id_client, id_cart)
         self.deleteClient(id_client)
     
-    '''
+    
     def addItem(self):
         id_client = self.addClient()
         id_cart = self.addCart(id_client)
@@ -132,6 +132,35 @@ class ClientsTestCase(unittest.TestCase):
     '''    
     
     
+class wineTestCase(unittest.TestCase):
+    
+    def setUp(self):
+        self.tester = app.test_client(self)
+        app.config['TESTING'] =True
+
+    def tearDown(self):
+        del self.tester
+        
+    def addWine(self):
+        response = self.tester.post('/wines', content_type='application/json', data = json.dumps({'varietals':[], 'name':'GranDuque'}))
+        return json.loads(response.data)['created']
+    
+    def deletWine(self, id_wine):
+        response = self.tester.delete('/wines/' + str(id_wine), content_type='application/json')
+    
+    def test_addWine(self):
+        response = self.tester.post('/wines', content_type='application/json', data = json.dumps({'varietals':[], 'name':'GranDuque'}))
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.data), {'created':0})
+        self.deletWine(json.loads(response.data)['created'])
+        
+    def test_deleteWine(self):
+        id_wine = self.addWine()
+        response = self.tester.delete('/wines/' + str(id_wine), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.data), {'deleted':id_wine})
     
 if __name__ == '__main__':
     unittest.main()

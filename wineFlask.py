@@ -259,7 +259,7 @@ def manager_wines():
     if request.method == 'POST':
         return addWine()
     if request.method == 'GET':
-        if 'type' is in request.json:
+        if 'type' in request.json:
             return wineByType()
         return getWines()
     if request.method == 'DELETE':
@@ -297,11 +297,11 @@ def deleteWines():
 @app.route('/wines/<path:id_wine>', methods = ['PUT', 'GET', 'DELETE'])
 def manager_whine(id_wine):  
     if request.method == 'PUT':
-        return updateWine(id_wine)
+        return updateWine(int(id_wine))
     if request.method == 'GET':
-        return getWineProperties(id_wine)
+        return getWineProperties(int(id_wine))
     if request.method == 'DELETE':
-        return deleteWine()
+        return deleteWine(int(id_wine))
     
 def updateWine(id_wine):
     if not request.json:
@@ -315,7 +315,7 @@ def updateWine(id_wine):
     w = w[0]
     for k in request.json:
         w[k] = request.json[k]
-    
+    i
     return make_response(jsonify({'updated': w}), 200)
     
 def getWineProperties(id_wine):
@@ -329,9 +329,6 @@ def getWineProperties(id_wine):
     return make_response(jsonify({'wine': w[0]}), 200)
 
 def deleteWine(id_wine):
-    if not request.json:
-        abort(400)
-        
     w = filter(lambda t:t['id'] == id_wine, wines)
     if len(w) == 0:
         abort(404)
